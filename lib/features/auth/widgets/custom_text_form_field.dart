@@ -7,11 +7,10 @@ class CustomTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: TextStyle(
-        color: Colors.white
-      ),
+      style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         prefixIcon: icon,
+        prefixIconColor: Colors.white30,
         hint: Text(hintText, style: TextStyle(color: Colors.white30)),
         fillColor: Color(0xff172133),
         filled: true,
@@ -21,12 +20,10 @@ class CustomTextFormField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(width: 2, color: Color(0xff304369)),
-
           borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
         disabledBorder: OutlineInputBorder(
           borderSide: BorderSide(width: 2, color: Color(0xff304369)),
-
           borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
       ),

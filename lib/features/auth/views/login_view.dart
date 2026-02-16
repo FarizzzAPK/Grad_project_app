@@ -1,4 +1,8 @@
 import 'package:clincal/features/auth/widgets/custom_text_form_field.dart';
+import 'package:clincal/features/auth/widgets/login_signup_button.dart';
+import 'package:clincal/features/auth/widgets/login_with_google.dart';
+import 'package:clincal/features/auth/widgets/or_row.dart';
+import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class LoginView extends StatelessWidget {
@@ -17,7 +21,7 @@ class LoginView extends StatelessWidget {
             SizedBox(height: 150),
             Text(
               "Health portal",
-              style: TextStyle(color: Colors.white, fontSize: 25),
+              style: TextStyle(color: Colors.white, fontSize: 30),
             ),
             SizedBox(height: 30),
             Container(
@@ -68,69 +72,31 @@ class LoginView extends StatelessWidget {
                     icon: Icon(Icons.lock),
                   ),
                   SizedBox(height: 32),
-                  Container(
-                    width: double.infinity,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Color(0xff256af4),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Log In",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                  ),
+                  LoginSignupButton(text: "Log in"),
                   SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-
-                    children: [
-                      SizedBox(
-                        height: 1,
-                        width: 100,
-                        child: ColoredBox(color: Colors.white30),
-                      ),
-                      Text(
-                        "Or",
-                        style: TextStyle(fontSize: 22, color: Colors.white),
-                      ),
-                      SizedBox(
-                        height: 1,
-                        width: 100,
-                        child: ColoredBox(color: Colors.white30),
-                      ),
-                    ],
-                  ),
+                  OrRow(),
                   SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xff304369)),
-                      color: Color(0xff172133),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Center(
-                      child: Row(
-mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            "assets/images/googleLogo.png",
-                            height: 25,
-                          ),
-                          SizedBox(width: 10,),
-                          Text(
-                            "Login with Google",
-                            style: TextStyle(color: Colors.white, fontSize: 13),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  LoginWithGoogle(),
                 ],
               ),
+            ),
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomText(
+                  text: "Don't have an account?.. ",
+                  weight: FontWeight.w500,
+                  color: Colors.white30,
+                  size: 14,
+                ),
+                CustomText(
+                  text: "Sign Up",
+                  weight: FontWeight.w500,
+                  color: Colors.blue,
+                  size: 16,
+                ),
+              ],
             ),
           ],
         ),
