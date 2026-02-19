@@ -1,3 +1,4 @@
+import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class LoginWithGoogle extends StatelessWidget {
@@ -6,7 +7,7 @@ class LoginWithGoogle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){},
+      onTap: () {},
       child: Container(
         width: double.infinity,
         height: 60,
@@ -19,14 +20,12 @@ class LoginWithGoogle extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                "assets/images/googleLogo.png",
-                height: 25,
-              ),
-              SizedBox(width: 10,),
-              Text(
-                "Login with Google",
-                style: TextStyle(color: Colors.white, fontSize: 13),
+              Image.asset("assets/images/googleLogo.png", height: 25),
+              SizedBox(width: 10),
+              CustomText(
+                text: "Login with Google",
+                color: Colors.white,
+                size: 13,
               ),
             ],
           ),

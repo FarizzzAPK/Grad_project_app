@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 
 class CustomText extends StatelessWidget {
-  String text;
-  Color color;
-  double size;
-  TextOverflow? overflow;
-  FontWeight weight;
-   CustomText({super.key,required this.text,required this.weight, this.overflow,required this.color,required this.size});
+  final String text;
+  final Color? color;
+  final double? size;
+  final TextOverflow? overflow;
+  final FontWeight? weight;
+
+  const CustomText({
+    super.key,
+    required this.text,
+    this.weight,
+    this.overflow,
+    this.color,
+    this.size,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,4 +29,3 @@ class CustomText extends StatelessWidget {
     );
   }
 }
-

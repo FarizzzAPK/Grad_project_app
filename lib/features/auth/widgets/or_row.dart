@@ -1,3 +1,4 @@
+import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class OrRow extends StatelessWidget {
@@ -5,7 +6,7 @@ class OrRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return                   Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
 
       children: [
@@ -14,17 +15,13 @@ class OrRow extends StatelessWidget {
           width: 100,
           child: ColoredBox(color: Colors.white30),
         ),
-        Text(
-          "Or",
-          style: TextStyle(fontSize: 22, color: Colors.white),
-        ),
+        CustomText(text: "Or", size: 22, color: Colors.white),
         SizedBox(
           height: 1,
           width: 100,
           child: ColoredBox(color: Colors.white30),
         ),
       ],
-    )
-    ;
+    );
   }
 }

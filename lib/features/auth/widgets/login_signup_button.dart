@@ -1,25 +1,23 @@
+import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class LoginSignupButton extends StatelessWidget {
-   LoginSignupButton({super.key,required this.text});
-String text;
+  const LoginSignupButton({super.key, required this.text, this.onTap});
+  final String text;
+  final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-      },
+      onTap: onTap,
       child: Container(
         width: double.infinity,
         height: 60,
         decoration: BoxDecoration(
-          color: Color(0xff256af4),
+          color: const Color(0xff256af4),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Center(
-          child: Text(
-            text,
-            style: TextStyle(color: Colors.white, fontSize: 18),
-          ),
+          child: CustomText(text: text, color: Colors.white, size: 18),
         ),
       ),
     );
