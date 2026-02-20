@@ -1,3 +1,5 @@
+import 'package:clincal/features/home/views/home_view.dart';
+import 'package:clincal/root.dart';
 import 'package:flutter/material.dart';
 
 import 'features/auth/views/login_view.dart';
@@ -13,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const LoginView(),
+      home:  Root(),
     );
   }
 }
