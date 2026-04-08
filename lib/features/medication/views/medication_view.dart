@@ -10,7 +10,7 @@ class MedicationView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: appColors.backgroundColor,
-      body: Center(child: CustomText(text: "Medication")),
+      body: Center(child: CustomText(text: "Medication",color: Colors.white,)),
     );
   }
 }
