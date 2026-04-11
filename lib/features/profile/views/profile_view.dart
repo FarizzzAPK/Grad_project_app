@@ -1,4 +1,6 @@
 import 'package:clincal/core/constants/app_colors.dart';
+import 'package:clincal/features/profile/widgets/custom_container.dart';
+import 'package:clincal/features/profile/widgets/custom_info_row.dart';
 import 'package:clincal/features/profile/widgets/personal_info.dart';
 import 'package:clincal/features/profile/widgets/profile_image.dart';
 import 'package:clincal/shared/custom_text.dart';
@@ -35,7 +37,10 @@ class ProfileView extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.settings_outlined, color: Colors.blueAccent),
+                        icon: const Icon(
+                          Icons.settings_outlined,
+                          color: Colors.blueAccent,
+                        ),
                         onPressed: () {},
                       ),
                     ),
@@ -44,11 +49,17 @@ class ProfileView extends StatelessWidget {
                 const SizedBox(height: 24),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 32,
+                    horizontal: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xff131B2E),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: Colors.white.withOpacity(0.05), width: 1.5),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.05),
+                      width: 1.5,
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.2),
@@ -78,9 +89,25 @@ class ProfileView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-
                 const PersonalInfo(),
-                const SizedBox(height: 40),
+                const SizedBox(height: 16),
+                GestureDetector(
+                  child: CustomContainer(
+                    text: "Change Password",
+                    icon: Icons.key,
+                    bgColor: Colors.green,
+                    iconColor: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 16),
+                GestureDetector(
+                  child: CustomContainer(
+                    text: "Logout",
+                    icon: Icons.logout,
+                    bgColor: Colors.red,
+                    iconColor: Colors.redAccent,
+                  ),
+                ),
               ],
             ),
           ),
@@ -89,4 +116,3 @@ class ProfileView extends StatelessWidget {
     );
   }
 }
-

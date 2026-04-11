@@ -12,7 +12,6 @@ class RequestsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isThereRequests = true;
-
     return Scaffold(
       backgroundColor: appColors.backgroundColor,
       body: SafeArea(
@@ -37,10 +36,13 @@ class RequestsView extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.tune_rounded, color: Colors.blueAccent),
+                      icon: const Icon(
+                        Icons.tune_rounded,
+                        color: Colors.blueAccent,
+                      ),
                       onPressed: () {},
                     ),
-                  )
+                  ),
                 ],
               ),
               const CustomText(
@@ -58,13 +60,19 @@ class RequestsView extends StatelessWidget {
                         physics: const BouncingScrollPhysics(),
                         padding: const EdgeInsets.only(bottom: 24),
                         itemCount: 5,
-                        separatorBuilder: (context, index) => const SizedBox(height: 16),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 16),
                         itemBuilder: (context, index) {
-                          return const Center(child: CustomRequestCard());
+                          return Center(
+                            child: Container(
+                              child: const CustomRequestCard(),
+                              width: double.infinity,
+                            ),
+                          );
                         },
                       )
                     : const NoRequests(),
-              )
+              ),
             ],
           ),
         ),
@@ -72,4 +80,3 @@ class RequestsView extends StatelessWidget {
     );
   }
 }
-
