@@ -1,109 +1,12 @@
-import 'package:clincal/core/constants/app_colors.dart';
-import 'package:clincal/features/medication/widgets/medication_card.dart';
-import 'package:clincal/features/medication/widgets/top_timer_section.dart';
 import 'package:clincal/shared/custom_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class MedicationView extends StatefulWidget {
-  const MedicationView({super.key});
-
-  @override
-  State<MedicationView> createState() => _MedicationViewState();
-}
-
-class _MedicationViewState extends State<MedicationView> {
-  final AppColors appColors = AppColors();
-
-  // Mock Data
-  final List<Map<String, dynamic>> medications = [
-    {
-      'name': 'Amoxicillin',
-      'dosage': '500mg',
-      'schedule': '08:00 AM - 08:00 PM',
-      'doctor': 'Dr. Sarah Smith',
-      'duration': 'Oct 12 - Oct 19',
-      'icon': Icons.medication,
-      'isNearest': true,
-      'color': Colors.blueAccent,
-    },
-    {
-      'name': 'Lisinopril',
-      'dosage': '10mg',
-      'schedule': '09:00 AM',
-      'doctor': 'Dr. John Doe',
-      'duration': 'Ongoing',
-      'icon': Icons.medical_services,
-      'isNearest': false,
-      'color': Colors.tealAccent,
-    },
-    {
-      'name': 'Metformin',
-      'dosage': '1000mg',
-      'schedule': '08:00 AM - 02:00 PM - 08:00 PM',
-      'doctor': 'Dr. Emily Chen',
-      'duration': 'Ongoing',
-      'icon': Icons.vaccines,
-      'isNearest': false,
-      'color': Colors.orangeAccent,
-    },
-  ];
+class TopTimerSection extends StatelessWidget {
+  const TopTimerSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: appColors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const CustomText(
-          text: 'Medication',
-          color: Colors.white,
-          size: 24,
-          weight: FontWeight.bold,
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline, color: Colors.blueAccent),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(
-            child: _buildTopTimerSection(),
-          ),
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
-              child: CustomText(
-                text: 'Your Schedule',
-                color: Colors.white70,
-                size: 18,
-                weight: FontWeight.w600,
-              ),
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  return MedicationCard(medication: medications[index]);
-                },
-                childCount: medications.length,
-              ),
-            ),
-          ),
-          const SliverPadding(padding: EdgeInsets.only(bottom: 20)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTopTimerSection() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       padding: const EdgeInsets.all(24),
