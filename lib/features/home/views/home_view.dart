@@ -1,7 +1,9 @@
 import 'package:clincal/core/constants/app_colors.dart';
 import 'package:clincal/features/home/widget/app_bar.dart';
+import 'package:clincal/features/home/widget/custom_alert_card.dart';
 import 'package:clincal/features/home/widget/custom_doctor_card.dart';
 import 'package:clincal/features/home/widget/custom_request_card.dart';
+import 'package:clincal/features/home/widget/custom_tips_card.dart';
 import 'package:clincal/features/home/widget/search_field.dart';
 import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
@@ -35,18 +37,38 @@ class HomeView extends StatelessWidget {
                 CustomText(text: "View All",color: Color(0xffDAE2FD),size: 14,weight: FontWeight.w500,),
               ],
             ),
-            
-            Expanded(
+            SizedBox(height: 16,),
+
+            Container(
               child: SingleChildScrollView(
-                child: Column(
+                scrollDirection: Axis.horizontal,
+                child: Row(
                   children: [
-                    CustomRequestCard(),
-                    CustomRequestCard(),
-                    CustomRequestCard(),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: CustomRequestCard(),
+                    ),
                     CustomRequestCard(),
                   ],
                 ),
               ),
+            ),
+            SizedBox(height: 24),
+
+            CustomAlertCard(
+              text:
+              "If you have persistent abdominal pain or bleeding, consult a doctor immediately.",
+            ),
+
+            SizedBox(height: 16),
+
+            CustomTipsCard(
+              tips: [
+                "Drink plenty of water 💧",
+                "Eat fiber-rich foods (vegetables & fruits) 🥦",
+                "Avoid smoking 🚭",
+                "Do regular screenings 🧪",
+              ],
             ),
 
           ],

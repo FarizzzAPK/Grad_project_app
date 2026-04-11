@@ -27,44 +27,42 @@ class _RootState extends State<Root> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: appColors.backgroundColor,
-        body: IndexedStack(index: currentIndex, children: screens),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.transparent,
-          elevation: 1,
-          currentIndex: currentIndex,
-          onTap: (index) {
-            setState(() {
-              currentIndex = index;
-            });
-          },
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.white70,
-          type: BottomNavigationBarType.fixed,
-          items: [
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              label: "Home",
+    return Scaffold(
+      backgroundColor: appColors.backgroundColor,
+      body: IndexedStack(index: currentIndex, children: screens),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.transparent,
+        elevation: 1,
+        currentIndex: currentIndex,
+        onTap: (index) {
+          setState(() {
+            currentIndex = index;
+          });
+        },
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        type: BottomNavigationBarType.fixed,
+        items: [
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: "Home",
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.medication_outlined),
+            label: "Medication",
+          ),
+          BottomNavigationBarItem(
+            icon: Transform.rotate(
+              angle: -pi / 4,
+              child: const Icon(Icons.send),
             ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.medication_outlined),
-              label: "Medication",
-            ),
-            BottomNavigationBarItem(
-              icon: Transform.rotate(
-                angle: -pi / 4,
-                child: const Icon(Icons.send),
-              ),
-              label: "Requests",
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              label: "Profile",
-            ),
-          ],
-        ),
+            label: "Requests",
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: "Profile",
+          ),
+        ],
       ),
     );
   }

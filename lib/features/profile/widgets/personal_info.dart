@@ -18,8 +18,20 @@ class PersonalInfo extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
 
         children: [
-
           CustomInfoRow(infoName: "personal Info", infoData: "", nameSize: 20),
+          CustomInfoRow(
+            infoName: "User Id",
+            infoData: "#13264",
+            nameSize: 16,
+            nameColor: Color(0xffC5C6CD),
+          ),
+          CustomInfoRow(
+            infoName: "Phone number",
+            infoData: "01154176265",
+            nameSize: 16,
+            nameColor: Color(0xffC5C6CD),
+          ),
+
           CustomInfoRow(
             infoName: "Date of Birth",
             infoData: "1/1/2000",
@@ -34,8 +46,8 @@ class PersonalInfo extends StatelessWidget {
             dataColor: Color(0xffFFB4AB),
           ),
           CustomInfoRow(
-            infoName: "Primary Language",
-            infoData: "English",
+            infoName: "Personal Doctor",
+            infoData: "Bahaa Shams",
             nameSize: 16,
             nameColor: Color(0xffC5C6CD),
           ),

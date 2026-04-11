@@ -6,13 +6,17 @@ import 'package:flutter/services.dart';
 import 'features/auth/views/login_view.dart';
 
 void main() {
-  runApp(const MyApp());
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor:  Color(0xffffffff),
-    // statusBarBrightness: Brightness.dark,
+  WidgetsFlutterBinding.ensureInitialized(); // 👈 الأول
 
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarIconBrightness: Brightness.light,
+      statusBarColor: Colors.white,
+      statusBarBrightness: Brightness.light,
+    ),
+  );
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -20,10 +24,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home:  Root(),
-    );
+    return MaterialApp(debugShowCheckedModeBanner: false, home: Root());
   }
 }
-
