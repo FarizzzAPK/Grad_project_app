@@ -23,15 +23,22 @@ class CustomTipsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withOpacity(0.15),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color),
+        border: Border.all(color: color.withOpacity(0.4)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 15,
+            offset: Offset(0, 5),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, color: color,size: 25,),
-              SizedBox(width: 8),
+              Icon(icon, color: color, size: 28),
+              SizedBox(width: 10),
               CustomText(
                 text: title,
                 color: Colors.white,
@@ -40,16 +47,30 @@ class CustomTipsCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 12),
 
           ...tips.map(
                 (tip) => Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: CustomText(
-                text: "• $tip",
-                color: Colors.white70,
-                size: 16,
-                weight: FontWeight.w600,
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(
+                    text: "•",
+                    color: color.withOpacity(0.8),
+                    size: 18,
+                    weight: FontWeight.bold,
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: CustomText(
+                      text: tip,
+                      color: Colors.white70,
+                      size: 15,
+                      weight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -57,4 +78,4 @@ class CustomTipsCard extends StatelessWidget {
       ),
     );
   }
-}
+}

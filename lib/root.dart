@@ -4,6 +4,7 @@ import 'package:clincal/features/medication/views/medication_view.dart';
 import 'package:clincal/features/profile/views/profile_view.dart';
 import 'package:clincal/features/requests/views/requests_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'core/constants/app_colors.dart';
 import 'features/home/views/home_view.dart';
@@ -27,43 +28,51 @@ class _RootState extends State<Root> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: appColors.backgroundColor,
-      body: IndexedStack(index: currentIndex, children: screens),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.transparent,
-        elevation: 1,
-        currentIndex: currentIndex,
-        onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: "Home",
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.medication_outlined),
-            label: "Medication",
-          ),
-          BottomNavigationBarItem(
-            icon: Transform.rotate(
-              angle: -pi / 4,
-              child: const Icon(Icons.send),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light, // Forces white icons on Android
+        statusBarBrightness: Brightness.dark,      // Forces white icons on iOS
+      ),
+      child: Scaffold(
+        backgroundColor: appColors.backgroundColor,
+        body: IndexedStack(index: currentIndex, children: screens),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.transparent,
+          elevation: 1,
+          currentIndex: currentIndex,
+          onTap: (index) {
+            setState(() {
+              currentIndex = index;
+            });
+          },
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white70,
+          type: BottomNavigationBarType.fixed,
+          items: [
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              label: "Home",
             ),
-            label: "Requests",
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: "Profile",
-          ),
-        ],
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.medication_outlined),
+              label: "Medication",
+            ),
+            BottomNavigationBarItem(
+              icon: Transform.rotate(
+                angle: -pi / 4,
+                child: const Icon(Icons.send),
+              ),
+              label: "Requests",
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: "Profile",
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+

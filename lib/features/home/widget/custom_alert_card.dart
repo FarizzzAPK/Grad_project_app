@@ -21,12 +21,20 @@ class CustomAlertCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withOpacity(0.15),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color),
+        border: Border.all(color: color.withOpacity(0.4)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 15,
+            offset: Offset(0, 5),
+          ),
+        ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color),
-          SizedBox(width: 10),
+          Icon(icon, color: color, size: 28),
+          SizedBox(width: 12),
           Expanded(
             child: CustomText(
               text: text,
@@ -39,4 +47,4 @@ class CustomAlertCard extends StatelessWidget {
       ),
     );
   }
-}
+}

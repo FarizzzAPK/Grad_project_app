@@ -2,37 +2,37 @@ import 'package:flutter/material.dart';
 
 class SearchField extends StatelessWidget {
   SearchField({super.key});
-  TextEditingController searchController = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 48,
+      height: 52,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: Offset(0, 3),
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: TextField(
         controller: searchController,
-        cursorColor: Color(0xff004bac),
-        cursorHeight: 20,
+        cursorColor: Colors.blueAccent,
+        style: const TextStyle(color: Colors.white, fontSize: 15),
         decoration: InputDecoration(
-          hintText: "Search",
-          hintStyle: TextStyle(fontSize: 13),
-          suffixIcon: Icon(Icons.search),
+          hintText: "Search doctor, appointments, etc.",
+          hintStyle: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14),
+          prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.5), size: 22),
+          suffixIcon: Icon(Icons.tune_rounded, color: Colors.blueAccent.withOpacity(0.8), size: 22),
           border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 14,horizontal: 16),
+          contentPadding: const EdgeInsets.symmetric(vertical: 16),
         ),
       ),
     );
   }
-}
+}

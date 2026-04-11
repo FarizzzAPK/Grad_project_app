@@ -10,12 +10,16 @@ class CustomRequestCard extends StatelessWidget {
       padding: EdgeInsets.all(16),
       width: 350,
       decoration: BoxDecoration(
-        border: Border.all(
-          color: Color(0xffcad5e0),
-          width: 0.5
-        ),
+        color: const Color(0xFF18223C),
         borderRadius: BorderRadius.circular(24),
-        color: Color(0xff171F33),
+        border: Border.all(color: Colors.white.withOpacity(0.05), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
       ),
       child: Column(
         children: [
