@@ -8,36 +8,49 @@ class ProfileImage extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.all(4),
+          padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [Color(0xff38DEBB), Color(0xffB9C7E4)],
+            gradient: const LinearGradient(
+              colors: [Color(0xff38DEBB), Colors.blueAccent],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xff38DEBB).withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 5),
+              ),
+            ],
           ),
           child: const CircleAvatar(
-            backgroundColor: Colors.white,
-            radius: 70,
+            backgroundColor: Color(0xff18223C),
+            radius: 65,
             backgroundImage: AssetImage("assets/images/ma3soub.PNG"),
           ),
         ),
         Positioned(
-          bottom: 0,
-          right: 0,
+          bottom: 4,
+          right: 4,
           child: Container(
-            child: IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.edit),
-              style: ButtonStyle(
-                iconSize: WidgetStatePropertyAll(28),
-                iconColor: WidgetStatePropertyAll(Color(0xff233148)),
-              ),
-            ),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Color(0xffB9C7E4),
+              color: const Color(0xFF1E293B),
               shape: BoxShape.circle,
+              border: Border.all(color: Colors.blueAccent, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.camera_alt_outlined,
+              color: Colors.white,
+              size: 20,
             ),
           ),
         ),
@@ -45,3 +58,4 @@ class ProfileImage extends StatelessWidget {
     );
   }
 }
+

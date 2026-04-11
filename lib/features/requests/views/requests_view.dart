@@ -7,47 +7,69 @@ import 'package:flutter/material.dart';
 
 class RequestsView extends StatelessWidget {
   RequestsView({super.key});
-  AppColors appColors = AppColors();
+  final AppColors appColors = AppColors();
 
   @override
   Widget build(BuildContext context) {
-    bool isThereRequests=true;
+    bool isThereRequests = true;
+
     return Scaffold(
       backgroundColor: appColors.backgroundColor,
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomText(
-              text: "Medical Requests",
-              color: Color(0xffB9C7E4),
-              size: 22,
-            ),
-            SizedBox(height: 32),
-            CustomText(
-              text: "Manage your\nclinical priorities",
-              color: Color(0xffB9C7E4),
-              size: 28,
-              weight: FontWeight.bold,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: CustomTab(),
-            ),
-            Expanded(
-                child: isThereRequests ?  ListView.builder(
-                  itemCount: 5,
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index) => Container(
-                      margin: EdgeInsets.symmetric(vertical: 8),
-                      width: double.infinity,
-                      child: CustomRequestCard()),) : NoRequests(),
-            )
-
-          ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const CustomText(
+                    text: "Medical Requests",
+                    color: Color(0xffDAE2FD),
+                    size: 22,
+                    weight: FontWeight.w600,
+                  ),
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF1E293B),
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.tune_rounded, color: Colors.blueAccent),
+                      onPressed: () {},
+                    ),
+                  )
+                ],
+              ),
+              const CustomText(
+                text: "Manage your\nclinical priorities",
+                color: Colors.white,
+                size: 32,
+                weight: FontWeight.bold,
+              ),
+              const SizedBox(height: 24),
+              const CustomTab(),
+              const SizedBox(height: 20),
+              Expanded(
+                child: isThereRequests
+                    ? ListView.separated(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.only(bottom: 24),
+                        itemCount: 5,
+                        separatorBuilder: (context, index) => const SizedBox(height: 16),
+                        itemBuilder: (context, index) {
+                          return const Center(child: CustomRequestCard());
+                        },
+                      )
+                    : const NoRequests(),
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 }
+

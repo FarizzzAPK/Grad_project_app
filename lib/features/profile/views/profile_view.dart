@@ -6,55 +6,87 @@ import 'package:flutter/material.dart';
 
 class ProfileView extends StatelessWidget {
   ProfileView({super.key});
-  AppColors appColors = AppColors();
+  final AppColors appColors = AppColors();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: appColors.backgroundColor,
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomText(
-              text: "Profile Data",
-              size: 28,
-              color: Color(0xffDAE2FD),
-              weight: FontWeight.bold,
-            ),
-            SizedBox(height: 16),
-            Container(
-              height: 600,
-              decoration: BoxDecoration(
-                color: Color(0xff131B2E),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Color(0xff233148)),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(height: 16),
-                  Center(child: ProfileImage()),
-                  SizedBox(height: 16),
-                  CustomText(
-                    text: "Sa7n elma3soub",
-                    size: 28,
-                    color: Color(0xffDAE2FD),
-                    weight: FontWeight.bold,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const CustomText(
+                      text: "My Profile",
+                      size: 26,
+                      color: Color(0xffDAE2FD),
+                      weight: FontWeight.bold,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E293B),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.settings_outlined, color: Colors.blueAccent),
+                        onPressed: () {},
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xff131B2E),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.white.withOpacity(0.05), width: 1.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
                   ),
-                  CustomText(
-                    text: "ma3soub_mn_frm7@clinic.com",
-                    size: 14,
-                    color: Color(0xffC5C6CD),
+                  child: Column(
+                    children: [
+                      const ProfileImage(),
+                      const SizedBox(height: 20),
+                      const CustomText(
+                        text: "Sa7n elma3soub",
+                        size: 24,
+                        color: Colors.white,
+                        weight: FontWeight.bold,
+                      ),
+                      const SizedBox(height: 4),
+                      const CustomText(
+                        text: "ma3soub_mn_frm7@clinic.com",
+                        size: 14,
+                        color: Colors.white54,
+                        weight: FontWeight.w400,
+                      ),
+                    ],
                   ),
-                  PersonalInfo(),
-                ],
-              ),
+                ),
+                const SizedBox(height: 24),
+
+                const PersonalInfo(),
+                const SizedBox(height: 40),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
+
