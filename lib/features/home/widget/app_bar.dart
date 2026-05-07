@@ -1,3 +1,4 @@
+import 'package:clincal/features/auth/data/auth_service.dart';
 import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
 
@@ -6,8 +7,6 @@ class CustomAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String name = "John";
-
     return Container(
       height: 60,
       width: double.infinity,
@@ -44,10 +43,21 @@ class CustomAppBar extends StatelessWidget {
                     size: 12,
                     color: Color(0xff95a2b8),
                   ),
-                  CustomText(
-                    text: "Welcome, $name",
-                    size: 15,
-                    color: Colors.white,
+                  FutureBuilder<Map<String, dynamic>?>(
+                    future: AuthService.instance.getUserData(),
+                    builder: (context, snapshot) {
+                      String userName = "User";
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                         userName = "Loading...";
+                      } else if (snapshot.hasData && snapshot.data!['name'] != null && snapshot.data!['name'].toString().isNotEmpty) {
+                         userName = snapshot.data!['name'];
+                      }
+                      return CustomText(
+                        text: "Welcome, $userName",
+                        size: 15,
+                        color: Colors.white,
+                      );
+                    }
                   ),
                 ],
               ),

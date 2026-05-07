@@ -1,8 +1,10 @@
+import 'package:clincal/features/auth/data/auth_service.dart';
 import 'package:clincal/features/auth/widgets/custom_text_form_field.dart';
 import 'package:clincal/features/auth/widgets/login_signup_button.dart';
 import 'package:clincal/features/auth/widgets/login_with_google.dart';
 import 'package:clincal/features/auth/widgets/or_row.dart';
 import 'package:clincal/features/home/views/home_view.dart';
+import 'package:clincal/root.dart';
 import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
 
@@ -58,9 +60,6 @@ class _LoginContainerState extends State<LoginContainer> {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your email';
                 }
-                if (!value.contains('@')) {
-                  return 'Please enter a valid email';
-                }
                 return null;
               },
             ),
@@ -101,13 +100,33 @@ class _LoginContainerState extends State<LoginContainer> {
             const SizedBox(height: 32),
             LoginSignupButton(
               text: "Log in",
-              onTap: () {
+              onTap: () async {
                 if (_formKey.currentState!.validate()) {
-                  // Proceed with login
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Processing Data')),
+                    const SnackBar(content: Text('Connecting to server...')),
                   );
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeView(),));
+                  
+                  try {
+                    await AuthService.instance.login(
+                      _emailController.text.trim(),
+                      _passwordController.text.trim(),
+                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Login Successful!'), backgroundColor: Colors.green),
+                      );
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  Root()));
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      print(e.toString());
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+                      );
+                    }
+                  }
                 }
               },
             ),

@@ -1,4 +1,6 @@
 import 'package:clincal/core/constants/app_colors.dart';
+import 'package:clincal/features/auth/data/auth_service.dart';
+import 'package:clincal/features/auth/views/login_view.dart';
 import 'package:clincal/features/profile/widgets/custom_container.dart';
 import 'package:clincal/features/profile/widgets/custom_info_row.dart';
 import 'package:clincal/features/profile/widgets/personal_info.dart';
@@ -72,18 +74,42 @@ class ProfileView extends StatelessWidget {
                     children: [
                       const ProfileImage(),
                       const SizedBox(height: 20),
-                      const CustomText(
-                        text: "Sa7n elma3soub",
-                        size: 24,
-                        color: Colors.white,
-                        weight: FontWeight.bold,
-                      ),
-                      const SizedBox(height: 4),
-                      const CustomText(
-                        text: "ma3soub_mn_frm7@clinic.com",
-                        size: 14,
-                        color: Colors.white54,
-                        weight: FontWeight.w400,
+                      FutureBuilder<Map<String, dynamic>?>(
+                        future: AuthService.instance.getUserData(),
+                        builder: (context, snapshot) {
+                          String name = "User Default";
+                          String email = "Unknown Email";
+
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            name = "Loading...";
+                            email = "Loading...";
+                          } else if (snapshot.hasData) {
+                            if (snapshot.data!['name'] != null && snapshot.data!['name'].toString().isNotEmpty) {
+                              name = snapshot.data!['name'];
+                            }
+                            if (snapshot.data!['email'] != null && snapshot.data!['email'].toString().isNotEmpty) {
+                              email = snapshot.data!['email'];
+                            }
+                          }
+                          
+                          return Column(
+                            children: [
+                              CustomText(
+                                text: name,
+                                size: 24,
+                                color: Colors.white,
+                                weight: FontWeight.bold,
+                              ),
+                              const SizedBox(height: 4),
+                              CustomText(
+                                text: email,
+                                size: 14,
+                                color: Colors.white54,
+                                weight: FontWeight.w400,
+                              ),
+                            ],
+                          );
+                        }
                       ),
                     ],
                   ),
@@ -101,6 +127,19 @@ class ProfileView extends StatelessWidget {
                 ),
                 SizedBox(height: 16),
                 GestureDetector(
+                  onTap: () async {
+                    // Call AuthService to clear session locally
+                    await AuthService.instance.clearAuth();
+                    
+                    if (context.mounted) {
+                      // Navigate back to Login Screen and clear routing stack
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginView()),
+                        (route) => false,
+                      );
+                    }
+                  },
                   child: CustomContainer(
                     text: "Logout",
                     icon: Icons.logout,

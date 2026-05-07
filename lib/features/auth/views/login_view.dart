@@ -4,9 +4,7 @@ import 'package:clincal/features/auth/widgets/login_container.dart';
 import 'package:clincal/features/auth/widgets/login_signup_button.dart';
 import 'package:clincal/features/auth/widgets/login_with_google.dart';
 import 'package:clincal/features/auth/widgets/logo_widget.dart';
-import 'package:clincal/features/auth/widgets/or_row.dart';
-import 'package:clincal/features/home/views/home_view.dart';
-import 'package:clincal/shared/custom_text.dart';
+
 import 'package:flutter/material.dart';
 
 class LoginView extends StatefulWidget {

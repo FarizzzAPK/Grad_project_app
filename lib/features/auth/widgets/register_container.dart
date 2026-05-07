@@ -1,3 +1,5 @@
+import 'package:clincal/features/auth/data/auth_service.dart';
+import 'package:clincal/features/auth/data/models/user_model.dart';
 import 'package:clincal/features/auth/widgets/custom_text_form_field.dart';
 import 'package:clincal/features/auth/widgets/login_signup_button.dart';
 import 'package:clincal/features/auth/widgets/login_with_google.dart';
@@ -135,14 +137,45 @@ class _RegisterContainerState extends State<RegisterContainer> {
             const SizedBox(height: 32),
             LoginSignupButton(
               text: "Sign Up",
-              onTap: () {
+              onTap: () async {
                 if (_formKey.currentState!.validate()) {
-                  // Proceed with registration
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Processing Registration'),
+                      content: Text('Processing Registration...'),
                     ),
                   );
+
+                  try {
+                    final newUser = UserModel(
+                      username: _nameController.text,
+                      email: _emailController.text,
+                      phoneNumber: "",
+                      password: _passwordController.text,
+                      confirmPassword: _confirmPasswordController.text,
+                      isDoctor: false,
+                    );
+
+                    await AuthService.instance.register(newUser.toJson());
+
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Registration Successful! Please Log in.'), 
+                          backgroundColor: Colors.green
+                        ),
+                      );
+                      // Go back to login screen
+                      Navigator.pop(context);
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+                      );
+                    }
+                  }
                 }
               },
             ),

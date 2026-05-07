@@ -1,11 +1,6 @@
-import 'package:clincal/features/auth/widgets/custom_text_form_field.dart';
 import 'package:clincal/features/auth/widgets/go_to_login.dart';
-import 'package:clincal/features/auth/widgets/login_signup_button.dart';
-import 'package:clincal/features/auth/widgets/login_with_google.dart';
 import 'package:clincal/features/auth/widgets/logo_widget.dart';
-import 'package:clincal/features/auth/widgets/or_row.dart';
 import 'package:clincal/features/auth/widgets/register_container.dart';
-import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class RegisterView extends StatefulWidget {
