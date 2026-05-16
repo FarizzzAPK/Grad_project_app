@@ -1,10 +1,12 @@
 import 'package:clincal/core/constants/app_colors.dart';
 import 'package:clincal/features/auth/data/auth_service.dart';
 import 'package:clincal/features/auth/views/login_view.dart';
+import 'package:clincal/features/profile/views/edit_user_data.dart';
 import 'package:clincal/features/profile/widgets/custom_container.dart';
-import 'package:clincal/features/profile/widgets/custom_info_row.dart';
 import 'package:clincal/features/profile/widgets/personal_info.dart';
 import 'package:clincal/features/profile/widgets/profile_image.dart';
+import 'package:clincal/features/profile/controllers/profile_controller.dart';
+import 'package:clincal/features/profile/patient_data_model.dart';
 import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
 
@@ -74,24 +76,23 @@ class ProfileView extends StatelessWidget {
                     children: [
                       const ProfileImage(),
                       const SizedBox(height: 20),
-                      FutureBuilder<Map<String, dynamic>?>(
-                        future: AuthService.instance.getUserData(),
+                      FutureBuilder<PatientDataModel?>(
+                        future: ProfileController().fetchPatientProfile(),
                         builder: (context, snapshot) {
                           String name = "User Default";
                           String email = "Unknown Email";
-
-                          if (snapshot.connectionState == ConnectionState.waiting) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
                             name = "Loading...";
                             email = "Loading...";
-                          } else if (snapshot.hasData) {
-                            if (snapshot.data!['name'] != null && snapshot.data!['name'].toString().isNotEmpty) {
-                              name = snapshot.data!['name'];
+                          } else if (snapshot.hasData && snapshot.data != null) {
+                            if (snapshot.data!.data.userName.isNotEmpty) {
+                              name = snapshot.data!.data.userName;
                             }
-                            if (snapshot.data!['email'] != null && snapshot.data!['email'].toString().isNotEmpty) {
-                              email = snapshot.data!['email'];
+                            if (snapshot.data!.data.email.isNotEmpty) {
+                              email = snapshot.data!.data.email;
                             }
                           }
-                          
                           return Column(
                             children: [
                               CustomText(
@@ -109,7 +110,7 @@ class ProfileView extends StatelessWidget {
                               ),
                             ],
                           );
-                        }
+                        },
                       ),
                     ],
                   ),
@@ -118,8 +119,9 @@ class ProfileView extends StatelessWidget {
                 const PersonalInfo(),
                 const SizedBox(height: 16),
                 GestureDetector(
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EditUserData(),)),
                   child: CustomContainer(
-                    text: "Change Password",
+                    text: "Edit My Info",
                     icon: Icons.key,
                     bgColor: Colors.green,
                     iconColor: Colors.white,
@@ -130,12 +132,14 @@ class ProfileView extends StatelessWidget {
                   onTap: () async {
                     // Call AuthService to clear session locally
                     await AuthService.instance.clearAuth();
-                    
+
                     if (context.mounted) {
                       // Navigate back to Login Screen and clear routing stack
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginView()),
+                        MaterialPageRoute(
+                          builder: (context) => const LoginView(),
+                        ),
                         (route) => false,
                       );
                     }

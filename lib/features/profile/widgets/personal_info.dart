@@ -1,5 +1,7 @@
 import 'package:clincal/features/profile/widgets/custom_info_row.dart';
 import 'package:clincal/shared/custom_text.dart';
+import 'package:clincal/features/profile/controllers/profile_controller.dart';
+import 'package:clincal/features/profile/patient_data_model.dart';
 import 'package:flutter/material.dart';
 
 class PersonalInfo extends StatelessWidget {
@@ -34,40 +36,62 @@ class PersonalInfo extends StatelessWidget {
               ),
             ],
           ),
-          child: Column(
-            children: [
-              const CustomInfoRow(
-                icon: Icons.badge_outlined,
-                infoName: "User ID",
-                infoData: "#13264",
-              ),
-              _buildDivider(),
-              const CustomInfoRow(
-                icon: Icons.phone_outlined,
-                infoName: "Phone Number",
-                infoData: "01154176265",
-              ),
-              _buildDivider(),
-              const CustomInfoRow(
-                icon: Icons.calendar_today_outlined,
-                infoName: "Date of Birth",
-                infoData: "01 / 01 / 2000",
-              ),
-              _buildDivider(),
-              const CustomInfoRow(
-                icon: Icons.water_drop_outlined,
-                infoName: "Blood Type",
-                infoData: "O Positive",
-                dataColor: Color(0xffFF6B6B),
-                isBoldData: true,
-              ),
-              _buildDivider(),
-              const CustomInfoRow(
-                icon: Icons.medical_services_outlined,
-                infoName: "Personal Doctor",
-                infoData: "Dr. Bahaa Shams",
-              ),
-            ],
+          child: FutureBuilder<PatientDataModel?>(
+            future: ProfileController().fetchPatientProfile(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              
+              String userId = "#11111";
+              String phone = "01*********";
+              String gender = "Male";
+              String joinedDate = "01 / 01 / 2026";
+              String email = "example@mail.com";
+              
+              if (snapshot.hasData && snapshot.data != null) {
+                userId = "#${snapshot.data!.data.userId}";
+                phone = snapshot.data!.data.phoneNumber;
+                gender = snapshot.data!.data.gender == 1 ? "Male" : (snapshot.data!.data.gender == 2 ? "Female" : "Other");
+                DateTime d = snapshot.data!.data.createdAt;
+                joinedDate = "${d.day.toString().padLeft(2, '0')} / ${d.month.toString().padLeft(2, '0')} / ${d.year}";
+                email = snapshot.data!.data.email;
+              }
+
+              return Column(
+                children: [
+                  CustomInfoRow(
+                    icon: Icons.badge_outlined,
+                    infoName: "User ID",
+                    infoData: userId,
+                  ),
+                  _buildDivider(),
+                  CustomInfoRow(
+                    icon: Icons.phone_outlined,
+                    infoName: "Phone Number",
+                    infoData: phone,
+                  ),
+                  _buildDivider(),
+                  CustomInfoRow(
+                    icon: Icons.person_outline,
+                    infoName: "Gender",
+                    infoData: gender,
+                  ),
+                  _buildDivider(),
+                  CustomInfoRow(
+                    icon: Icons.email_outlined,
+                    infoName: "Email",
+                    infoData: email,
+                  ),
+                  _buildDivider(),
+                  CustomInfoRow(
+                    icon: Icons.calendar_today_outlined,
+                    infoName: "Joined Date",
+                    infoData: joinedDate,
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ],
