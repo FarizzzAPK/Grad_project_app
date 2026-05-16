@@ -46,16 +46,24 @@ class PersonalInfo extends StatelessWidget {
               String userId = "#11111";
               String phone = "01*********";
               String gender = "Male";
+              String bloodType = "N/A";
+              String dateOfBirth = "N/A";
               String joinedDate = "01 / 01 / 2026";
               String email = "example@mail.com";
               
               if (snapshot.hasData && snapshot.data != null) {
-                userId = "#${snapshot.data!.data.userId}";
-                phone = snapshot.data!.data.phoneNumber;
-                gender = snapshot.data!.data.gender == 1 ? "Male" : (snapshot.data!.data.gender == 2 ? "Female" : "Other");
-                DateTime d = snapshot.data!.data.createdAt;
+                final patientData = snapshot.data!.data;
+                userId = "#${patientData.userId}";
+                phone = patientData.phoneNumber;
+                gender = patientData.gender;
+                bloodType = patientData.formattedBloodType;
+                if (patientData.dateOfBirth != null) {
+                  final dob = patientData.dateOfBirth!;
+                  dateOfBirth = "${dob.day.toString().padLeft(2, '0')} / ${dob.month.toString().padLeft(2, '0')} / ${dob.year}";
+                }
+                DateTime d = patientData.createdAt;
                 joinedDate = "${d.day.toString().padLeft(2, '0')} / ${d.month.toString().padLeft(2, '0')} / ${d.year}";
-                email = snapshot.data!.data.email;
+                email = patientData.email;
               }
 
               return Column(
@@ -76,6 +84,18 @@ class PersonalInfo extends StatelessWidget {
                     icon: Icons.person_outline,
                     infoName: "Gender",
                     infoData: gender,
+                  ),
+                  _buildDivider(),
+                  CustomInfoRow(
+                    icon: Icons.bloodtype_outlined,
+                    infoName: "Blood Type",
+                    infoData: bloodType,
+                  ),
+                  _buildDivider(),
+                  CustomInfoRow(
+                    icon: Icons.cake_outlined,
+                    infoName: "Date of Birth",
+                    infoData: dateOfBirth,
                   ),
                   _buildDivider(),
                   CustomInfoRow(

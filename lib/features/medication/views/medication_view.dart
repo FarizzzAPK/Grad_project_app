@@ -369,7 +369,6 @@ class _MedicationViewState extends State<MedicationView> {
     );
   }
 
-  /// Find the nearest upcoming medication dose
   Map<String, dynamic>? _findNearestMedication() {
     if (_controller.medications.isEmpty) return null;
 
@@ -386,7 +385,7 @@ class _MedicationViewState extends State<MedicationView> {
           final minute = int.tryParse(parts[1]) ?? 0;
           final timeMinutes = hour * 60 + minute;
           int diff = timeMinutes - nowMinutes;
-          if (diff < 0) diff += 24 * 60; // wrap to next day
+          if (diff < 0) diff += 24 * 60;
 
           if (bestDiff == null || diff < bestDiff) {
             bestDiff = diff;

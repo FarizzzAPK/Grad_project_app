@@ -8,64 +8,104 @@ String patientDataModelToJson(PatientDataModel data) =>
     json.encode(data.toJson());
 
 class PatientDataModel {
-  PatientDataModel({required this.data, required this.success});
+  PatientDataModel({required this.data, required this.success, this.message});
 
   Data data;
   bool success;
+  String? message;
 
   factory PatientDataModel.fromJson(Map<dynamic, dynamic> json) =>
       PatientDataModel(
         data: Data.fromJson(json["data"]),
         success: json["success"],
+        message: json["message"],
       );
 
-  Map<dynamic, dynamic> toJson() => {"data": data.toJson(), "success": success};
+  Map<dynamic, dynamic> toJson() => {
+    "data": data.toJson(),
+    "success": success,
+    "message": message,
+  };
 }
 
 class Data {
   Data({
-    required this.emailConfirmed,
-    required this.gender,
-    required this.userName,
     required this.userId,
-    required this.phoneNumberConfirmed,
-    required this.createdAt,
-    required this.phoneNumber,
+    required this.userName,
     required this.email,
+    required this.phoneNumber,
+    required this.emailConfirmed,
+    required this.phoneNumberConfirmed,
+    this.imagePath,
+    required this.gender,
+    this.bloodType,
+    this.dateOfBirth,
+    required this.createdAt,
     required this.updatedAt,
+    this.medicalRecord,
   });
 
-  bool emailConfirmed;
-  int gender;
-  String userName;
   int userId;
-  bool phoneNumberConfirmed;
-  DateTime createdAt;
-  String phoneNumber;
+  String userName;
   String email;
+  String phoneNumber;
+  bool emailConfirmed;
+  bool phoneNumberConfirmed;
+  String? imagePath;
+  String gender;
+  String? bloodType;
+  DateTime? dateOfBirth;
+  DateTime createdAt;
   DateTime updatedAt;
+  dynamic medicalRecord;
 
   factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
-    emailConfirmed: json["emailConfirmed"],
-    gender: json["gender"],
-    userName: json["userName"],
-    userId: json["userId"],
-    phoneNumberConfirmed: json["phoneNumberConfirmed"],
+    userId: json["userId"] ?? 0,
+    userName: json["userName"] ?? '',
+    email: json["email"] ?? '',
+    phoneNumber: json["phoneNumber"] ?? '',
+    emailConfirmed: json["emailConfirmed"] ?? false,
+    phoneNumberConfirmed: json["phoneNumberConfirmed"] ?? false,
+    imagePath: json["imagePath"],
+    gender: json["gender"] ?? 'Unknown',
+    bloodType: json["bloodType"],
+    dateOfBirth: json["dateOfBirth"] != null
+        ? DateTime.tryParse(json["dateOfBirth"])
+        : null,
     createdAt: DateTime.parse(json["createdAt"]),
-    phoneNumber: json["phoneNumber"],
-    email: json["email"],
     updatedAt: DateTime.parse(json["updatedAt"]),
+    medicalRecord: json["medicalRecord"],
   );
 
+  /// Returns a formatted blood type string (e.g. "B+" instead of "B_Positive")
+  String get formattedBloodType {
+    if (bloodType == null) return 'N/A';
+    final map = {
+      'A_Positive': 'A+',
+      'A_Negative': 'A-',
+      'B_Positive': 'B+',
+      'B_Negative': 'B-',
+      'AB_Positive': 'AB+',
+      'AB_Negative': 'AB-',
+      'O_Positive': 'O+',
+      'O_Negative': 'O-',
+    };
+    return map[bloodType] ?? bloodType!;
+  }
+
   Map<dynamic, dynamic> toJson() => {
-    "emailConfirmed": emailConfirmed,
-    "gender": gender,
-    "userName": userName,
     "userId": userId,
-    "phoneNumberConfirmed": phoneNumberConfirmed,
-    "createdAt": createdAt.toIso8601String(),
-    "phoneNumber": phoneNumber,
+    "userName": userName,
     "email": email,
+    "phoneNumber": phoneNumber,
+    "emailConfirmed": emailConfirmed,
+    "phoneNumberConfirmed": phoneNumberConfirmed,
+    "imagePath": imagePath,
+    "gender": gender,
+    "bloodType": bloodType,
+    "dateOfBirth": dateOfBirth?.toIso8601String(),
+    "createdAt": createdAt.toIso8601String(),
     "updatedAt": updatedAt.toIso8601String(),
+    "medicalRecord": medicalRecord,
   };
 }
