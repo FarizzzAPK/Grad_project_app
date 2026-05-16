@@ -49,7 +49,10 @@ class HomeView extends StatelessWidget {
                       onTap: () {},
                       borderRadius: BorderRadius.circular(8),
                       child: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         child: CustomText(
                           text: "View All",
                           color: Colors.blueAccent,
@@ -89,6 +92,14 @@ class HomeView extends StatelessWidget {
                       );
                     }
 
+                    // Single request — center it at full width
+                    if (requests.length == 1) {
+                      return Center(
+                        child: CustomRequestCard(request: requests.first),
+                      );
+                    }
+
+                    // Multiple requests — horizontal scroll
                     return SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       physics: const BouncingScrollPhysics(),
@@ -135,7 +146,9 @@ class HomeView extends StatelessWidget {
                     "Do regular screenings 🧪",
                   ],
                 ),
-                const SizedBox(height: 40), // Extra bottom padding for comfortable scroll
+                const SizedBox(
+                  height: 40,
+                ), // Extra bottom padding for comfortable scroll
               ],
             ),
           ),
@@ -144,4 +157,3 @@ class HomeView extends StatelessWidget {
     );
   }
 }
-
