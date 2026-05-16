@@ -1,41 +1,57 @@
+import 'package:clincal/features/medication/data/medication_model.dart';
 import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class MedicationCard extends StatelessWidget {
-  final Map<String, dynamic> medication;
+  final MedicationModel medication;
+  final bool isHighlighted;
 
-  const MedicationCard({super.key, required this.medication});
+  const MedicationCard({
+    super.key,
+    required this.medication,
+    this.isHighlighted = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final bool isNearest = medication['isNearest'] ?? false;
-    final Color brandColor = medication['color'] ?? Colors.blueAccent;
+    final Color brandColor = medication.isDoctorPrescribed
+        ? Colors.orangeAccent
+        : Colors.blueAccent;
 
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: const Color(0xFF18223C),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isNearest
-              ? Colors.blueAccent.withOpacity(0.6)
+          color: isHighlighted
+              ? Colors.blueAccent.withOpacity(0.8)
               : Colors.white.withOpacity(0.05),
-          width: 1.5,
+          width: isHighlighted ? 2.0 : 1.5,
         ),
-        boxShadow: isNearest
+        boxShadow: isHighlighted
             ? [
                 BoxShadow(
+                  color: Colors.blueAccent.withOpacity(0.3),
+                  blurRadius: 24,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 4),
+                ),
+                BoxShadow(
                   color: Colors.blueAccent.withOpacity(0.15),
-                  blurRadius: 20,
+                  blurRadius: 40,
+                  spreadRadius: 0,
                   offset: const Offset(0, 8),
-                )
+                ),
               ]
             : [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
-                )
+                ),
               ],
       ),
       child: Material(
@@ -59,7 +75,13 @@ class MedicationCard extends StatelessWidget {
                         color: brandColor.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: Icon(medication['icon'], color: brandColor, size: 28),
+                      child: Icon(
+                        medication.isDoctorPrescribed
+                            ? Icons.medical_services
+                            : Icons.medication,
+                        color: brandColor,
+                        size: 28,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -67,14 +89,14 @@ class MedicationCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomText(
-                            text: medication['name'] ?? '',
+                            text: medication.name,
                             color: Colors.white,
                             size: 18,
                             weight: FontWeight.bold,
                           ),
                           const SizedBox(height: 6),
                           CustomText(
-                            text: medication['dosage'] ?? '',
+                            text: medication.dosage,
                             color: Colors.white54,
                             size: 14,
                             weight: FontWeight.w500,
@@ -82,34 +104,56 @@ class MedicationCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (isNearest)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.blueAccent.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const CustomText(
-                          text: 'Next',
-                          color: Colors.blueAccent,
-                          size: 12,
-                          weight: FontWeight.bold,
-                        ),
-                      )
-                    else
-                      const Icon(Icons.more_vert, color: Colors.white30, size: 20),
+                    // Source badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: medication.isDoctorPrescribed
+                            ? Colors.orangeAccent.withOpacity(0.2)
+                            : Colors.blueAccent.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: CustomText(
+                        text: medication.isDoctorPrescribed
+                            ? 'Prescribed'
+                            : 'Self',
+                        color: medication.isDoctorPrescribed
+                            ? Colors.orangeAccent
+                            : Colors.blueAccent,
+                        size: 11,
+                        weight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
                   child: Divider(color: Colors.white10, height: 1),
                 ),
-                _buildInfoRow(Icons.access_time_rounded, medication['schedule'] ?? ''),
+                _buildInfoRow(
+                  Icons.access_time_rounded,
+                  medication.formattedReminderTimes.join(' - '),
+                ),
                 const SizedBox(height: 10),
                 _buildInfoRow(
-                    Icons.person_outline_rounded, 'Prescribed by ${medication['doctor']}'),
+                  Icons.repeat_rounded,
+                  '${medication.frequency} • ${medication.daysOfWeekText}',
+                ),
                 const SizedBox(height: 10),
-                _buildInfoRow(Icons.date_range_rounded, medication['duration'] ?? ''),
+                _buildInfoRow(
+                  Icons.date_range_rounded,
+                  medication.endDate != null
+                      ? '${_formatDate(medication.startDate)} - ${_formatDate(medication.endDate!)}'
+                      : '${_formatDate(medication.startDate)} - Ongoing',
+                ),
+                if (medication.notes != null &&
+                    medication.notes!.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  _buildInfoRow(Icons.notes_rounded, medication.notes!),
+                ],
               ],
             ),
           ),
@@ -134,5 +178,23 @@ class MedicationCard extends StatelessWidget {
       ],
     );
   }
-}
 
+  String _formatDate(DateTime date) {
+    const months = [
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return '${months[date.month]} ${date.day}';
+  }
+}
