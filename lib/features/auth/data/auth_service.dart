@@ -14,6 +14,18 @@ class AuthService {
     return prefs.getString('auth_token');
   }
 
+  Future<String?> getRefreshToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('refresh_token');
+  }
+
+  /// Returns true if the current access token is expired
+  Future<bool> isTokenExpired() async {
+    final token = await getToken();
+    if (token == null) return true;
+    return JwtDecoder.isExpired(token);
+  }
+
   Future<Map<String, dynamic>?> getUserData() async {
     try {
       final token = await getToken();
@@ -50,6 +62,46 @@ class AuthService {
     await prefs.remove('auth_token');
     await prefs.remove('refresh_token');
     await prefs.remove('user_data');
+  }
+
+  /// Attempts to refresh the access token using the refresh token endpoint.
+  /// Returns the new access token on success, or null on failure.
+  Future<String?> refreshAccessToken() async {
+    try {
+      final currentToken = await getToken();
+      if (currentToken == null) return null;
+
+      final urlString = '${ApiConstants.baseUrl}${ApiConstants.refreshToken}'
+          .replaceAll('//api', '/api');
+      final url = Uri.parse(urlString);
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          'accessToken': currentToken,
+        }),
+      );
+
+      final data = _handleResponse(response);
+
+      if (data['accessToken'] != null) {
+        await saveToken(
+          data['accessToken'],
+          refreshToken: data['refreshToken'],
+        );
+        print('===== Token refreshed successfully =====');
+        return data['accessToken'];
+      }
+
+      return null;
+    } catch (e) {
+      print('Token refresh failed: $e');
+      return null;
+    }
   }
 
   Future<Map<String, String>> _getHeaders({bool requireAuth = false}) async {

@@ -5,12 +5,15 @@ import 'package:clincal/features/home/widget/custom_doctor_card.dart';
 import 'package:clincal/features/home/widget/custom_request_card.dart';
 import 'package:clincal/features/home/widget/custom_tips_card.dart';
 import 'package:clincal/features/home/widget/search_field.dart';
+import 'package:clincal/features/requests/controllers/requests_controller.dart';
+import 'package:clincal/features/requests/models/patient_request_model.dart';
 import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatelessWidget {
   HomeView({super.key});
   final AppColors appColors = AppColors();
+  final RequestsController _requestsController = RequestsController();
 
   @override
   Widget build(BuildContext context) {
@@ -58,17 +61,51 @@ class HomeView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  clipBehavior: Clip.none,
-                  child: Row(
-                    children: [
-                      const CustomRequestCard(),
-                      const SizedBox(width: 16),
-                      const CustomRequestCard(),
-                    ],
-                  ),
+                FutureBuilder<List<PatientRequest>>(
+                  future: _requestsController.fetchPatientRequests(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const SizedBox(
+                        height: 120,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.blueAccent,
+                          ),
+                        ),
+                      );
+                    }
+
+                    final requests = snapshot.data ?? [];
+
+                    if (requests.isEmpty) {
+                      return const SizedBox(
+                        height: 80,
+                        child: Center(
+                          child: CustomText(
+                            text: "No requests yet",
+                            color: Color(0xffC5C6CD),
+                          ),
+                        ),
+                      );
+                    }
+
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      clipBehavior: Clip.none,
+                      child: Row(
+                        children: requests.map((request) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 16),
+                            child: SizedBox(
+                              width: 320,
+                              child: CustomRequestCard(request: request),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 36),
                 const CustomText(

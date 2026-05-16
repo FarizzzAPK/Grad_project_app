@@ -1,14 +1,17 @@
+import 'package:clincal/features/requests/models/patient_request_model.dart';
 import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class CustomRequestCard extends StatelessWidget {
-  const CustomRequestCard({super.key});
+  final PatientRequest request;
+
+  const CustomRequestCard({super.key, required this.request});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(16),
-      width: 350,
+      width: double.infinity,
       decoration: BoxDecoration(
         color: const Color(0xFF18223C),
         borderRadius: BorderRadius.circular(24),
@@ -22,6 +25,7 @@ class CustomRequestCard extends StatelessWidget {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,13 +41,10 @@ class CustomRequestCard extends StatelessWidget {
                     ),
                     height: 40,
                     width: 50,
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.healing_sharp,
-                        color: Color(0xffcad5e0),
-                        size: 28,
-                      ),
+                    child: Icon(
+                      _getSubjectIcon(request.subject),
+                      color: Color(0xffcad5e0),
+                      size: 24,
                     ),
                   ),
                   SizedBox(width: 10),
@@ -52,12 +53,13 @@ class CustomRequestCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomText(
-                        text: "Dr. Sarah Jenkins",
+                        text: request.subject,
                         size: 15,
                         color: Color(0xffDAE2FD),
+                        weight: FontWeight.w600,
                       ),
                       CustomText(
-                        text: "Cardiology Specialist",
+                        text: "Doctor #${request.doctorId}",
                         size: 12,
                         color: Color(0xffC5C6CD),
                       ),
@@ -67,60 +69,76 @@ class CustomRequestCard extends StatelessWidget {
               ),
               Container(
                 decoration: BoxDecoration(
-                  color: Color(0xff93000A),
+                  color: request.importanceColor,
                   borderRadius: BorderRadius.circular(50),
                 ),
                 height: 35,
-                width: 100,
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Center(
-                  child: CustomText(text: "Urgent", color: Color(0xffFFDAD6)),
+                  child: CustomText(
+                    text: request.importance,
+                    color: request.importanceTextColor,
+                    size: 13,
+                    weight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 4),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CustomText(text: "Surgery ", color: Color(0xffB9C7E4)),
-              Container(color: Color(0xff44474D).withOpacity(0.2), height: 2),
-            ],
-          ),
+          SizedBox(height: 12),
           CustomText(
-            overflow: TextOverflow.clip,
-            text:
-                "Pre-operative clearance required for scheduled valve replacement procedure next week.",
+            overflow: TextOverflow.ellipsis,
+            text: request.messagePreview,
             color: Color(0xffC5C6CD),
             size: 14,
           ),
+          SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children:[
-              CustomText(
-                text: "Today, 09:24 AM",
-                color: Color(0xffC5C6CD),
-                size: 12,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color(0xffB9C7E4),
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                height: 35,
-                width: 150,
-                child: Center(
-                  child: CustomText(
-                    weight: FontWeight.bold,
-                    text: "Complete Now",
-                    color: Color(0xff233148),
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.access_time, color: Color(0xffC5C6CD), size: 14),
+                  SizedBox(width: 4),
+                  CustomText(
+                    text: request.formattedDate,
+                    color: Color(0xffC5C6CD),
                     size: 12,
                   ),
-                ),
+                ],
+              ),
+              Row(
+                children: [
+                  Icon(Icons.reply_rounded, color: Color(0xffC5C6CD), size: 16),
+                  SizedBox(width: 4),
+                  CustomText(
+                    text: "${request.responseCount} responses",
+                    color: Color(0xffC5C6CD),
+                    size: 12,
+                  ),
+                ],
               ),
             ],
           ),
         ],
       ),
     );
+  }
+
+  IconData _getSubjectIcon(String subject) {
+    switch (subject.toLowerCase()) {
+      case 'food':
+        return Icons.restaurant_outlined;
+      case 'medication':
+        return Icons.medication_outlined;
+      case 'surgery':
+        return Icons.healing_sharp;
+      case 'checkup':
+        return Icons.health_and_safety_outlined;
+      case 'lab':
+        return Icons.science_outlined;
+      default:
+        return Icons.medical_services_outlined;
+    }
   }
 }

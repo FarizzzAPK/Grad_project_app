@@ -2,11 +2,15 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:clincal/features/auth/data/auth_service.dart';
 import '../constants/api_constants.dart';
 
 class ApiService {
   ApiService._privateConstructor();
   static final ApiService instance = ApiService._privateConstructor();
+
+  /// Flag to prevent multiple simultaneous refresh attempts
+  bool _isRefreshing = false;
 
   Future<Map<String, String>> _getHeaders({
     bool requireAuth = true,
@@ -31,6 +35,18 @@ class ApiService {
     return headers;
   }
 
+  /// Attempts to refresh the token and returns true if successful.
+  Future<bool> _tryRefreshToken() async {
+    if (_isRefreshing) return false;
+    _isRefreshing = true;
+    try {
+      final newToken = await AuthService.instance.refreshAccessToken();
+      return newToken != null;
+    } finally {
+      _isRefreshing = false;
+    }
+  }
+
   Future<Map<String, dynamic>> post(
     String endpoint, {
     Map<String, dynamic>? body,
@@ -44,17 +60,24 @@ class ApiService {
     final url = Uri.parse(urlString);
 
     try {
-      final finalHeaders = await _getHeaders(
+      var finalHeaders = await _getHeaders(
         requireAuth: requireAuth,
         customHeaders: headers,
       );
-      final response = await http
-          .post(
-            url,
-            headers: finalHeaders,
-            body: body != null ? jsonEncode(body) : null,
-          )
+      var response = await http
+          .post(url, headers: finalHeaders, body: body != null ? jsonEncode(body) : null)
           .timeout(const Duration(milliseconds: ApiConstants.receiveTimeout));
+
+      // Auto-refresh on 401
+      if (response.statusCode == 401 && requireAuth) {
+        final refreshed = await _tryRefreshToken();
+        if (refreshed) {
+          finalHeaders = await _getHeaders(requireAuth: true, customHeaders: headers);
+          response = await http
+              .post(url, headers: finalHeaders, body: body != null ? jsonEncode(body) : null)
+              .timeout(const Duration(milliseconds: ApiConstants.receiveTimeout));
+        }
+      }
 
       return _handleResponse(response);
     } on TimeoutException {
@@ -78,13 +101,24 @@ class ApiService {
     final url = Uri.parse(urlString);
 
     try {
-      final finalHeaders = await _getHeaders(
+      var finalHeaders = await _getHeaders(
         requireAuth: requireAuth,
         customHeaders: headers,
       );
-      final response = await http
+      var response = await http
           .get(url, headers: finalHeaders)
           .timeout(const Duration(milliseconds: ApiConstants.receiveTimeout));
+
+      // Auto-refresh on 401
+      if (response.statusCode == 401 && requireAuth) {
+        final refreshed = await _tryRefreshToken();
+        if (refreshed) {
+          finalHeaders = await _getHeaders(requireAuth: true, customHeaders: headers);
+          response = await http
+              .get(url, headers: finalHeaders)
+              .timeout(const Duration(milliseconds: ApiConstants.receiveTimeout));
+        }
+      }
 
       return _handleResponse(response);
     } on TimeoutException {
@@ -109,17 +143,24 @@ class ApiService {
     final url = Uri.parse(urlString);
 
     try {
-      final finalHeaders = await _getHeaders(
+      var finalHeaders = await _getHeaders(
         requireAuth: requireAuth,
         customHeaders: headers,
       );
-      final response = await http
-          .put(
-            url,
-            headers: finalHeaders,
-            body: body != null ? jsonEncode(body) : null,
-          )
+      var response = await http
+          .put(url, headers: finalHeaders, body: body != null ? jsonEncode(body) : null)
           .timeout(const Duration(milliseconds: ApiConstants.receiveTimeout));
+
+      // Auto-refresh on 401
+      if (response.statusCode == 401 && requireAuth) {
+        final refreshed = await _tryRefreshToken();
+        if (refreshed) {
+          finalHeaders = await _getHeaders(requireAuth: true, customHeaders: headers);
+          response = await http
+              .put(url, headers: finalHeaders, body: body != null ? jsonEncode(body) : null)
+              .timeout(const Duration(milliseconds: ApiConstants.receiveTimeout));
+        }
+      }
 
       return _handleResponse(response);
     } on TimeoutException {
@@ -143,13 +184,24 @@ class ApiService {
     final url = Uri.parse(urlString);
 
     try {
-      final finalHeaders = await _getHeaders(
+      var finalHeaders = await _getHeaders(
         requireAuth: requireAuth,
         customHeaders: headers,
       );
-      final response = await http
+      var response = await http
           .delete(url, headers: finalHeaders)
           .timeout(const Duration(milliseconds: ApiConstants.receiveTimeout));
+
+      // Auto-refresh on 401
+      if (response.statusCode == 401 && requireAuth) {
+        final refreshed = await _tryRefreshToken();
+        if (refreshed) {
+          finalHeaders = await _getHeaders(requireAuth: true, customHeaders: headers);
+          response = await http
+              .delete(url, headers: finalHeaders)
+              .timeout(const Duration(milliseconds: ApiConstants.receiveTimeout));
+        }
+      }
 
       return _handleResponse(response);
     } on TimeoutException {
