@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:clincal/core/api/api_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -34,14 +35,32 @@ class AuthService {
       if (JwtDecoder.isExpired(token)) return null;
 
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-      
+
       print("===== JWT DECODED: $decodedToken =====");
 
       return {
-        'userId': decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ?? decodedToken['nameid'] ?? '',
-        'name': decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ?? decodedToken['unique_name'] ?? decodedToken['name'] ?? decodedToken['Name'] ?? decodedToken['USERNAME'] ?? decodedToken['Username'] ?? '',
-        'email': decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ?? decodedToken['email'] ?? decodedToken['Email'] ?? '',
-        'role': decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ?? decodedToken['role'] ?? decodedToken['Role'] ?? '',
+        'userId':
+            decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ??
+            decodedToken['nameid'] ??
+            '',
+        'name':
+            decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ??
+            decodedToken['unique_name'] ??
+            decodedToken['name'] ??
+            decodedToken['Name'] ??
+            decodedToken['USERNAME'] ??
+            decodedToken['Username'] ??
+            '',
+        'email':
+            decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ??
+            decodedToken['email'] ??
+            decodedToken['Email'] ??
+            '',
+        'role':
+            decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ??
+            decodedToken['role'] ??
+            decodedToken['Role'] ??
+            '',
       };
     } catch (e) {
       print("JWT Parse Error: $e");
@@ -81,9 +100,7 @@ class AuthService {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: jsonEncode({
-          'accessToken': currentToken,
-        }),
+        body: jsonEncode({'accessToken': currentToken}),
       );
 
       final data = _handleResponse(response);
@@ -121,10 +138,10 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>> loginWithGoogle(
-      String idToken, {
-      bool isDoctor = false,
-      String? professionalPracticeLicense,
-      String? issuingAuthority,
+    String idToken, {
+    bool isDoctor = false,
+    String? professionalPracticeLicense,
+    String? issuingAuthority,
   }) async {
     final urlString = '${ApiConstants.baseUrl}${ApiConstants.loginWithGoogle}'
         .replaceAll('//api', '/api');
@@ -138,7 +155,8 @@ class AuthService {
         'isDoctor': isDoctor,
       };
 
-      if (professionalPracticeLicense != null && professionalPracticeLicense.isNotEmpty) {
+      if (professionalPracticeLicense != null &&
+          professionalPracticeLicense.isNotEmpty) {
         body['professionalPracticeLicense'] = professionalPracticeLicense;
       }
       if (issuingAuthority != null && issuingAuthority.isNotEmpty) {
@@ -177,11 +195,7 @@ class AuthService {
       final response = await http.post(
         url,
         headers: headers,
-        body: jsonEncode({
-          'usernameOrEmail':
-              email,
-          'password': password,
-        }),
+        body: jsonEncode({'usernameOrEmail': email, 'password': password}),
       );
 
       final data = _handleResponse(response);
@@ -215,6 +229,70 @@ class AuthService {
     } catch (e) {
       throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
+  }
+
+  /// Deletes the user account. Requires the user's password for confirmation.
+  /// Returns the API response on success, throws on failure.
+  Future<Map<String, dynamic>> deleteAccount(String password) async {
+    final apiService = (await _getApiService());
+    return apiService.delete(
+      ApiConstants.deleteAccount,
+      body: {'password': password},
+      requireAuth: true,
+    );
+  }
+
+  /// Updates the username. Requires the new username.
+  /// Returns the API response on success, throws on failure.
+  Future<Map<String, dynamic>> updateUsername(String newUserName) async {
+    final token = await getToken();
+    if (token == null) throw Exception('Not authenticated');
+
+    final urlString =
+        '${ApiConstants.baseUrl}${ApiConstants.updateUsername}'
+            .replaceAll('//api', '/api');
+    final url = Uri.parse(urlString);
+
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'newUserName': newUserName}),
+    );
+
+    return _handleResponse(response);
+  }
+
+  /// Updates the email. Requires the new email address.
+  /// Returns the API response on success, throws on failure.
+  Future<Map<String, dynamic>> updateEmail(String newEmail) async {
+    final token = await getToken();
+    if (token == null) throw Exception('Not authenticated');
+
+    final urlString =
+        '${ApiConstants.baseUrl}${ApiConstants.updateMail}'
+            .replaceAll('//api', '/api');
+    final url = Uri.parse(urlString);
+
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'newEmail': newEmail}),
+    );
+
+    return _handleResponse(response);
+  }
+
+  /// Convenience getter for the ApiService singleton.
+  Future<ApiService> _getApiService() async {
+    return ApiService.instance;
   }
 
   Map<String, dynamic> _handleResponse(http.Response response) {

@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clincal/features/auth/data/auth_service.dart';
+import 'package:flutter/material.dart';
+import 'package:clincal/main.dart';
+import 'package:clincal/features/auth/views/login_view.dart';
 import '../constants/api_constants.dart';
 
 class ApiService {
@@ -41,9 +44,25 @@ class ApiService {
     _isRefreshing = true;
     try {
       final newToken = await AuthService.instance.refreshAccessToken();
-      return newToken != null;
+      if (newToken != null) {
+        return true;
+      } else {
+        await _handleLogout();
+        return false;
+      }
     } finally {
       _isRefreshing = false;
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    await AuthService.instance.clearAuth();
+    if (navigatorKey.currentContext != null) {
+      Navigator.pushAndRemoveUntil(
+        navigatorKey.currentContext!,
+        MaterialPageRoute(builder: (_) => const LoginView()),
+        (route) => false,
+      );
     }
   }
 
@@ -174,6 +193,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> delete(
     String endpoint, {
+    Map<String, dynamic>? body,
     bool requireAuth = true,
     Map<String, String>? headers,
   }) async {
@@ -188,18 +208,30 @@ class ApiService {
         requireAuth: requireAuth,
         customHeaders: headers,
       );
-      var response = await http
-          .delete(url, headers: finalHeaders)
-          .timeout(const Duration(milliseconds: ApiConstants.receiveTimeout));
+
+      Future<http.Response> sendDelete(Map<String, String> hdrs) async {
+        if (body != null) {
+          // Use http.Request to send a body with DELETE
+          final request = http.Request('DELETE', url);
+          request.headers.addAll(hdrs);
+          request.body = jsonEncode(body);
+          final streamed = await request.send()
+              .timeout(const Duration(milliseconds: ApiConstants.receiveTimeout));
+          return http.Response.fromStream(streamed);
+        } else {
+          return http.delete(url, headers: hdrs)
+              .timeout(const Duration(milliseconds: ApiConstants.receiveTimeout));
+        }
+      }
+
+      var response = await sendDelete(finalHeaders);
 
       // Auto-refresh on 401
       if (response.statusCode == 401 && requireAuth) {
         final refreshed = await _tryRefreshToken();
         if (refreshed) {
           finalHeaders = await _getHeaders(requireAuth: true, customHeaders: headers);
-          response = await http
-              .delete(url, headers: finalHeaders)
-              .timeout(const Duration(milliseconds: ApiConstants.receiveTimeout));
+          response = await sendDelete(finalHeaders);
         }
       }
 

@@ -11,7 +11,11 @@ import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class ProfileView extends StatelessWidget {
-  ProfileView({super.key});
+  ProfileView({super.key}) {
+    // Trigger initial load when the view is created
+    ProfileController.instance.loadProfile();
+  }
+
   final AppColors appColors = AppColors();
 
   @override
@@ -76,39 +80,48 @@ class ProfileView extends StatelessWidget {
                     children: [
                       const ProfileImage(),
                       const SizedBox(height: 20),
-                      FutureBuilder<PatientDataModel?>(
-                        future: ProfileController().fetchPatientProfile(),
-                        builder: (context, snapshot) {
+                      // Reactively rebuilds when profileData changes
+                      ValueListenableBuilder<PatientDataModel?>(
+                        valueListenable: ProfileController.instance.profileData,
+                        builder: (context, data, _) {
                           String name = "User Default";
                           String email = "Unknown Email";
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            name = "Loading...";
-                            email = "Loading...";
-                          } else if (snapshot.hasData && snapshot.data != null) {
-                            if (snapshot.data!.data.userName.isNotEmpty) {
-                              name = snapshot.data!.data.userName;
+
+                          if (data != null) {
+                            if (data.data.userName.isNotEmpty) {
+                              name = data.data.userName;
                             }
-                            if (snapshot.data!.data.email.isNotEmpty) {
-                              email = snapshot.data!.data.email;
+                            if (data.data.email.isNotEmpty) {
+                              email = data.data.email;
                             }
                           }
-                          return Column(
-                            children: [
-                              CustomText(
-                                text: name,
-                                size: 24,
-                                color: Colors.white,
-                                weight: FontWeight.bold,
-                              ),
-                              const SizedBox(height: 4),
-                              CustomText(
-                                text: email,
-                                size: 14,
-                                color: Colors.white54,
-                                weight: FontWeight.w400,
-                              ),
-                            ],
+
+                          // Show loading indicator when data is null and loading
+                          return ValueListenableBuilder<bool>(
+                            valueListenable: ProfileController.instance.isLoading,
+                            builder: (context, loading, _) {
+                              if (loading && data == null) {
+                                name = "Loading...";
+                                email = "Loading...";
+                              }
+                              return Column(
+                                children: [
+                                  CustomText(
+                                    text: name,
+                                    size: 24,
+                                    color: Colors.white,
+                                    weight: FontWeight.bold,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  CustomText(
+                                    text: email,
+                                    size: 14,
+                                    color: Colors.white54,
+                                    weight: FontWeight.w400,
+                                  ),
+                                ],
+                              );
+                            },
                           );
                         },
                       ),
@@ -119,7 +132,10 @@ class ProfileView extends StatelessWidget {
                 const PersonalInfo(),
                 const SizedBox(height: 16),
                 GestureDetector(
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EditUserData(),)),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EditUserData()),
+                  ),
                   child: CustomContainer(
                     text: "Edit My Info",
                     icon: Icons.key,

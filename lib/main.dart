@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:clincal/features/auth/data/auth_service.dart';
 import 'package:clincal/features/auth/views/login_view.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
@@ -14,8 +16,22 @@ void main() async {
       statusBarBrightness: Brightness.dark,
     ),
   );
+  
+  bool isLoggedIn = false;
   final token = await AuthService.instance.getToken();
-  final bool isLoggedIn = token != null && token.isNotEmpty;
+  if (token != null && token.isNotEmpty) {
+    if (await AuthService.instance.isTokenExpired()) {
+      final newToken = await AuthService.instance.refreshAccessToken();
+      if (newToken != null) {
+        isLoggedIn = true;
+      } else {
+        await AuthService.instance.clearAuth();
+      }
+    } else {
+      isLoggedIn = true;
+    }
+  }
+
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
@@ -27,6 +43,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: appColors.backgroundColor,

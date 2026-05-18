@@ -5,17 +5,39 @@ import 'package:flutter/cupertino.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 class ProfileController extends ChangeNotifier {
-  Future<PatientDataModel?> fetchPatientProfile() async {
+  // Singleton so the same instance is shared across ProfileView & PersonalInfo
+  ProfileController._();
+  static final ProfileController instance = ProfileController._();
+
+  /// Holds the latest patient profile data.
+  final ValueNotifier<PatientDataModel?> profileData =
+      ValueNotifier<PatientDataModel?>(null);
+
+  /// Loading state exposed as a ValueNotifier.
+  final ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
+
+  /// Fetches (or re-fetches) the patient profile from the API
+  /// and updates [profileData].
+  Future<void> loadProfile() async {
+    isLoading.value = true;
     try {
       final response = await ApiService.instance.get(
         '/api/Patient',
         requireAuth: true,
       );
-      return PatientDataModel.fromJson(response);
+      profileData.value = PatientDataModel.fromJson(response);
     } catch (e) {
       print("Error fetching patient profile: $e");
-      return null;
+      profileData.value = null;
+    } finally {
+      isLoading.value = false;
     }
+  }
+
+  /// Convenience: fetch and return the model (for backward compat).
+  Future<PatientDataModel?> fetchPatientProfile() async {
+    await loadProfile();
+    return profileData.value;
   }
 
   Future<Map<String, dynamic>?> getUserData() async {
