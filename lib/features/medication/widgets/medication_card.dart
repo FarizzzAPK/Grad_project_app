@@ -1,6 +1,9 @@
 import 'package:clincal/features/medication/data/medication_model.dart';
+import 'package:clincal/features/medication/data/medication_controller.dart';
+import 'package:clincal/features/medication/views/add_medication_view.dart';
 import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MedicationCard extends StatelessWidget {
   final MedicationModel medication;
@@ -18,7 +21,7 @@ class MedicationCard extends StatelessWidget {
         ? Colors.orangeAccent
         : Colors.blueAccent;
 
-    return AnimatedContainer(
+    Widget cardContent = AnimatedContainer(
       duration: const Duration(milliseconds: 400),
       curve: Curves.easeInOut,
       margin: const EdgeInsets.only(bottom: 16),
@@ -59,6 +62,26 @@ class MedicationCard extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () {},
+          onLongPress: medication.isDoctorPrescribed
+              ? () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Doctor prescribed medications cannot be edited."),
+                      backgroundColor: Colors.orangeAccent,
+                    ),
+                  );
+                }
+              : () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (ctx) => AddMedicationView(
+                        controller: Provider.of<MedicationController>(context, listen: false),
+                        medicationToEdit: medication,
+                      ),
+                    ),
+                  );
+                },
           highlightColor: Colors.white.withOpacity(0.05),
           splashColor: Colors.white.withOpacity(0.1),
           child: Padding(
@@ -159,6 +182,79 @@ class MedicationCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+
+    if (medication.isDoctorPrescribed) {
+      return cardContent;
+    }
+
+    return Dismissible(
+      key: ValueKey('med_${medication.id}'),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (direction) async {
+        final messenger = ScaffoldMessenger.of(context);
+        final controller = Provider.of<MedicationController>(context, listen: false);
+
+        final bool? confirm = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: const Color(0xff18223C),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 28),
+                SizedBox(width: 12),
+                Text('Delete Medication', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ],
+            ),
+            content: Text(
+              'Are you sure you want to delete ${medication.name}?\nThis action cannot be undone.',
+              style: const TextStyle(color: Colors.white70, height: 1.5),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Delete', style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+        );
+        
+        if (confirm == true) {
+          final success = await controller.deleteMedication(medication.id);
+          if (success) {
+            messenger.showSnackBar(
+              const SnackBar(content: Text('Medication deleted.'), backgroundColor: Colors.green),
+            );
+            return true;
+          } else {
+            messenger.showSnackBar(
+              const SnackBar(content: Text('Failed to delete medication.'), backgroundColor: Colors.redAccent),
+            );
+            return false;
+          }
+        }
+        return false;
+      },
+      background: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.redAccent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 24),
+        child: const Icon(Icons.delete_outline, color: Colors.white, size: 32),
+      ),
+      child: cardContent,
     );
   }
 

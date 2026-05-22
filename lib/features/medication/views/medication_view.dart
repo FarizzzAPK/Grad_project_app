@@ -1,9 +1,11 @@
 import 'package:clincal/core/constants/app_colors.dart';
 import 'package:clincal/features/medication/data/medication_controller.dart';
 import 'package:clincal/features/medication/data/medication_model.dart';
+import 'package:clincal/features/medication/views/add_medication_view.dart';
 import 'package:clincal/features/medication/widgets/medication_card.dart';
 import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MedicationView extends StatefulWidget {
   const MedicationView({super.key});
@@ -120,7 +122,18 @@ class _MedicationViewState extends State<MedicationView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add_circle_outline, color: Colors.blueAccent),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddMedicationView(
+                    // Ensure you pass your instance of MedicationController
+                    controller: Provider.of<MedicationController>(context, listen: false),
+                  ),
+                ),
+              );
+
+            },
           ),
           const SizedBox(width: 8),
         ],

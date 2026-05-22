@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:clincal/features/auth/data/auth_service.dart';
 import 'package:clincal/features/auth/views/login_view.dart';
+import 'package:provider/provider.dart';
+import 'package:clincal/features/medication/data/medication_controller.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -16,7 +18,7 @@ void main() async {
       statusBarBrightness: Brightness.dark,
     ),
   );
-  
+
   bool isLoggedIn = false;
   final token = await AuthService.instance.getToken();
   if (token != null && token.isNotEmpty) {
@@ -42,20 +44,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: appColors.backgroundColor,
-        appBarTheme: const AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.light,
-            statusBarBrightness: Brightness.dark,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MedicationController()),
+      ],
+      child: MaterialApp(
+        navigatorKey: navigatorKey,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          scaffoldBackgroundColor: appColors.backgroundColor,
+          appBarTheme: const AppBarTheme(
+            systemOverlayStyle: SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.light,
+              statusBarBrightness: Brightness.dark,
+            ),
           ),
         ),
+        home: isLoggedIn ? const Root() : const LoginView(),
       ),
-      home: isLoggedIn ? const Root() : const LoginView(),
     );
   }
 }
