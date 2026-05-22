@@ -2,6 +2,7 @@ import 'package:clincal/core/constants/app_colors.dart';
 import 'package:clincal/features/auth/data/auth_service.dart';
 import 'package:clincal/features/auth/views/login_view.dart';
 import 'package:clincal/features/profile/controllers/profile_controller.dart';
+import 'package:clincal/features/profile/views/change_password_view.dart';
 import 'package:clincal/features/profile/widgets/custom_container.dart';
 import 'package:clincal/features/profile/widgets/profile_image.dart';
 import 'package:clincal/shared/custom_text.dart';
@@ -417,6 +418,23 @@ class _EditUserDataState extends State<EditUserData> {
                 subtitle: "Update your email address",
                 iconBgColor: Colors.tealAccent.shade700,
                 onTap: _handleChangeEmail,
+              ),
+              const SizedBox(height: 12),
+
+              // Change Password
+              _buildSettingsTile(
+                icon: Icons.lock_reset_rounded,
+                title: "Change Password",
+                subtitle: "Update your account password",
+                iconBgColor: Colors.deepPurpleAccent,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ChangePasswordView(),
+                    ),
+                  );
+                },
               ),
 
               const SizedBox(height: 32),

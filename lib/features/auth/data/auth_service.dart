@@ -290,6 +290,112 @@ class AuthService {
     return _handleResponse(response);
   }
 
+  Future<Map<String, dynamic>> forgotPassword(String emailOrPhone) async {
+    final urlString = '${ApiConstants.baseUrl}${ApiConstants.forgotPassword}'
+        .replaceAll('//api', '/api');
+    final url = Uri.parse(urlString);
+
+    try {
+      final response = await http.post(
+        url,
+        headers: await _getHeaders(),
+        body: jsonEncode({'emailOrPhone': emailOrPhone}),
+      );
+
+      return _handleResponse(response);
+    } catch (e) {
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  Future<Map<String, dynamic>> resetPassword({
+    required String emailOrPhone,
+    required String otpCode,
+    required String newPassword,
+    required String confirmNewPassword,
+  }) async {
+    final urlString = '${ApiConstants.baseUrl}${ApiConstants.resetPassword}'
+        .replaceAll('//api', '/api');
+    final url = Uri.parse(urlString);
+
+    try {
+      final response = await http.post(
+        url,
+        headers: await _getHeaders(),
+        body: jsonEncode({
+          'emailOrPhone': emailOrPhone,
+          'otpCode': otpCode,
+          'newPassword': newPassword,
+          'confirmNewPassword': confirmNewPassword,
+        }),
+      );
+
+      return _handleResponse(response);
+    } catch (e) {
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  /// Step 1: Request a password change OTP. Requires current password + auth token.
+  Future<Map<String, dynamic>> changePasswordRequest(String currentPassword) async {
+    final token = await getToken();
+    if (token == null) throw Exception('Not authenticated');
+
+    final urlString = '${ApiConstants.baseUrl}${ApiConstants.changePasswordRequest}'
+        .replaceAll('//api', '/api');
+    final url = Uri.parse(urlString);
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'currentPassword': currentPassword}),
+      );
+
+      return _handleResponse(response);
+    } catch (e) {
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  /// Step 2: Confirm password change with OTP + new password. Requires auth token.
+  Future<Map<String, dynamic>> changePasswordConfirm({
+    required String otpCode,
+    required String newPassword,
+    required String confirmNewPassword,
+  }) async {
+    final token = await getToken();
+    if (token == null) throw Exception('Not authenticated');
+
+    final urlString = '${ApiConstants.baseUrl}${ApiConstants.changePasswordConfirm}'
+        .replaceAll('//api', '/api');
+    final url = Uri.parse(urlString);
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'otpCode': otpCode,
+          'newPassword': newPassword,
+          'confirmNewPassword': confirmNewPassword,
+        }),
+      );
+
+      return _handleResponse(response);
+    } catch (e) {
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
   /// Convenience getter for the ApiService singleton.
   Future<ApiService> _getApiService() async {
     return ApiService.instance;

@@ -4,6 +4,7 @@ import 'package:clincal/features/auth/widgets/login_signup_button.dart';
 import 'package:clincal/features/auth/widgets/login_with_google.dart';
 import 'package:clincal/features/auth/widgets/or_row.dart';
 import 'package:clincal/features/home/views/home_view.dart';
+import 'package:clincal/features/auth/views/forgot_password_view.dart';
 import 'package:clincal/root.dart';
 import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
@@ -74,10 +75,20 @@ class _LoginContainerState extends State<LoginContainer> {
                     color: Colors.white,
                     size: 12,
                   ),
-                  CustomText(
-                    text: "Forgot Password?",
-                    color: const Color(0xff256af4).withOpacity(0.7),
-                    size: 12,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ForgotPasswordView(),
+                        ),
+                      );
+                    },
+                    child: CustomText(
+                      text: "Forgot Password?",
+                      color: const Color(0xff256af4).withOpacity(0.7),
+                      size: 12,
+                    ),
                   ),
                 ],
               ),
