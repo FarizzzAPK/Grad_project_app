@@ -6,6 +6,7 @@ import 'package:clincal/features/auth/data/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:clincal/main.dart';
 import 'package:clincal/features/auth/views/login_view.dart';
+import 'package:clincal/features/profile/controllers/profile_controller.dart';
 import '../constants/api_constants.dart';
 
 class ApiService {
@@ -57,6 +58,7 @@ class ApiService {
 
   Future<void> _handleLogout() async {
     await AuthService.instance.clearAuth();
+    ProfileController.instance.clearProfile();
     if (navigatorKey.currentContext != null) {
       Navigator.pushAndRemoveUntil(
         navigatorKey.currentContext!,
@@ -239,6 +241,65 @@ class ApiService {
     } on TimeoutException {
       throw Exception(
         'Connection timed out. Please check your internet and try again.',
+      );
+    } catch (e) {
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  Future<Map<String, dynamic>> uploadFile(
+    String endpoint,
+    String filePath, {
+    String method = 'POST',
+    String fileKey = 'image',
+    Map<String, String>? fields,
+    bool requireAuth = true,
+    Map<String, String>? headers,
+  }) async {
+    final urlString = '${ApiConstants.baseUrl}$endpoint'.replaceAll(
+      '//api',
+      '/api',
+    );
+    final url = Uri.parse(urlString);
+
+    try {
+      var finalHeaders = await _getHeaders(
+        requireAuth: requireAuth,
+        customHeaders: headers,
+      );
+
+      Future<http.Response> sendMultipart(Map<String, String> hdrs) async {
+        final request = http.MultipartRequest(method, url);
+        request.headers.addAll(hdrs);
+
+        if (fields != null) {
+          request.fields.addAll(fields);
+        }
+
+        request.files.add(
+          await http.MultipartFile.fromPath(fileKey, filePath),
+        );
+
+        final streamedResponse = await request.send()
+            .timeout(const Duration(milliseconds: ApiConstants.receiveTimeout * 2));
+        return http.Response.fromStream(streamedResponse);
+      }
+
+      var response = await sendMultipart(finalHeaders);
+
+      // Auto-refresh on 401
+      if (response.statusCode == 401 && requireAuth) {
+        final refreshed = await _tryRefreshToken();
+        if (refreshed) {
+          finalHeaders = await _getHeaders(requireAuth: true, customHeaders: headers);
+          response = await sendMultipart(finalHeaders);
+        }
+      }
+
+      return _handleResponse(response);
+    } on TimeoutException {
+      throw Exception(
+        'Upload timed out. Please check your internet and try again.',
       );
     } catch (e) {
       throw Exception(e.toString().replaceAll('Exception: ', ''));

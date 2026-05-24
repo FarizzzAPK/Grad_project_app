@@ -59,6 +59,16 @@ class Data {
   DateTime updatedAt;
   dynamic medicalRecord;
 
+  static String _parseGender(dynamic genderValue) {
+    if (genderValue == null) return 'Unknown';
+    if (genderValue is int) {
+      if (genderValue == 0) return 'Male';
+      if (genderValue == 1) return 'Female';
+      return 'Unknown';
+    }
+    return genderValue.toString();
+  }
+
   factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
     userId: json["userId"] ?? 0,
     userName: json["userName"] ?? '',
@@ -67,7 +77,7 @@ class Data {
     emailConfirmed: json["emailConfirmed"] ?? false,
     phoneNumberConfirmed: json["phoneNumberConfirmed"] ?? false,
     imagePath: json["imagePath"],
-    gender: json["gender"] ?? 'Unknown',
+    gender: _parseGender(json["gender"]),
     bloodType: json["bloodType"],
     dateOfBirth: json["dateOfBirth"] != null
         ? DateTime.tryParse(json["dateOfBirth"])

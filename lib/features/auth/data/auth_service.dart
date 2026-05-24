@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:clincal/core/api/api_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -227,6 +228,7 @@ class AuthService {
 
       return _handleResponse(response);
     } catch (e) {
+      log("$e");
       throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
@@ -418,6 +420,20 @@ class AuthService {
         );
       }
     } else {
+      // Extract detailed validation errors from ASP.NET response
+      final errors = responseData['errors'];
+      if (errors != null && errors is Map) {
+        final errorMessages = <String>[];
+        errors.forEach((field, messages) {
+          if (messages is List && messages.isNotEmpty) {
+            errorMessages.add(messages.first.toString());
+          }
+        });
+        if (errorMessages.isNotEmpty) {
+          throw Exception(errorMessages.join('\n'));
+        }
+      }
+
       final errorMessage =
           responseData['message'] ??
           responseData['title'] ??

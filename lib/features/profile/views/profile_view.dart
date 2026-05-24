@@ -10,24 +10,42 @@ import 'package:clincal/features/profile/patient_data_model.dart';
 import 'package:clincal/shared/custom_text.dart';
 import 'package:flutter/material.dart';
 
-class ProfileView extends StatelessWidget {
-  ProfileView({super.key}) {
-    // Trigger initial load when the view is created
+class ProfileView extends StatefulWidget {
+  const ProfileView({super.key});
+
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  final AppColors appColors = AppColors();
+
+  @override
+  void initState() {
+    super.initState();
     ProfileController.instance.loadProfile();
   }
 
-  final AppColors appColors = AppColors();
+  Future<void> _handleRefresh() async {
+    await ProfileController.instance.loadProfile(force: true);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: appColors.backgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Column(
+        child: RefreshIndicator(
+          onRefresh: _handleRefresh,
+          color: Colors.blueAccent,
+          backgroundColor: const Color(0xff131B2E),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Row(
@@ -148,6 +166,8 @@ class ProfileView extends StatelessWidget {
                   onTap: () async {
                     // Call AuthService to clear session locally
                     await AuthService.instance.clearAuth();
+                    // Clear profile state
+                    ProfileController.instance.clearProfile();
 
                     if (context.mounted) {
                       // Navigate back to Login Screen and clear routing stack
@@ -172,6 +192,7 @@ class ProfileView extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

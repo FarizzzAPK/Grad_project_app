@@ -1,4 +1,6 @@
 
+import 'dart:io';
+import 'package:clincal/core/constants/api_constants.dart';
 import 'package:clincal/features/profile/controllers/profile_controller.dart';
 import 'package:clincal/features/profile/patient_data_model.dart';
 import 'package:clincal/shared/custom_text.dart';
@@ -19,21 +21,55 @@ class CustomAppBar extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Color(0xff1e293b),
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                height: 60,
-                width: 60,
-                child: IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.person_outline,
-                    color: Color(0xffcad5e0),
-                    size: 28,
-                  ),
-                ),
+              ValueListenableBuilder<PatientDataModel?>(
+                valueListenable: ProfileController.instance.profileData,
+                builder: (context, data, _) {
+                  final imagePath = data?.data.imagePath;
+                  
+                  ImageProvider? imageProvider;
+                  if (imagePath != null && imagePath.isNotEmpty) {
+                    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+                      imageProvider = NetworkImage(imagePath);
+                    } else if (File(imagePath).existsSync()) {
+                      imageProvider = FileImage(File(imagePath));
+                    } else {
+                      imageProvider = NetworkImage('${ApiConstants.baseUrl}$imagePath');
+                    }
+                  }
+                  
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xff1e293b),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.blueAccent.withOpacity(0.3),
+                        width: 1.5,
+                      ),
+                    ),
+                    height: 60,
+                    width: 60,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: imageProvider != null
+                          ? Image(
+                              image: imageProvider,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(
+                                  Icons.person_outline,
+                                  color: Color(0xffcad5e0),
+                                  size: 28,
+                                );
+                              },
+                            )
+                          : const Icon(
+                              Icons.person_outline,
+                              color: Color(0xffcad5e0),
+                              size: 28,
+                            ),
+                    ),
+                  );
+                },
               ),
               SizedBox(width: 10),
               Column(
